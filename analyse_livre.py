@@ -51,17 +51,11 @@ df_livre["sous_titre"] = df_livre["sous_titre"].fillna("Absent")
 # C. Changer le format des titres
 df_livre["titre"] = df_livre["titre"].str.strip().str.capitalize()
 
-print(df_livre.info())
 
 # D. Supprimer des colonnes
 df_livre = df_livre.drop(columns=["nb_editions", "langues", "nb_veut_lire", "nb_en_cours", "nb_deja_lu"])
-print(df_livre.head())
 
 
-# Left Join table des livres et table des notes
-df_notes = df_notes.drop(columns="date")                                    # Supprimer la colonne date de la table note
-table_note = df_notes.groupby("work_id")["note"].mean().round(2)            # Conserver uniquement la moyenne des notes par oeuvre dans la table des notes
-livre_note_df = pd.merge(df_livre, table_note, how="left", on="work_id")    # Fusionner les deux tables
-# print(livre_note_df.isna().sum())
 
-print(len(df_livre))
+# API google book : Liste des livres manquants
+
