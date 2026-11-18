@@ -23,3 +23,5 @@ fig, ax = plt.subplots()
 barres_notes=ax.bar(repartition_notes.index, repartition_notes["Nombre_de_notes"])
 ax.set(title="Repartition des notes", xlabel="Note", ylabel="Nombre")
 plt.show()
+
+print(len(notes.groupby("work_id").agg(note_moyenne=("note", "mean"))))

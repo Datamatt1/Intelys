@@ -35,3 +35,17 @@ print(df_livre["disponible_fr"].value_counts())
 # C. Les livres avec le plus d'édition
 plus_edition = df_livre.sort_values("nb_editions", ascending=False).head(10)
 # print(plus_edition[["titre", "nb_editions", "nb_veut_lire", "nb_lecteurs", "note_moyenne"]])
+
+
+print(df_livre)
+
+df_livres_2=df_livre
+df_livres_2=df_livres_2[df_livres_2["disponible_fr"]==True]
+
+
+df_livres_2=df_livres_2.dropna(subset=["resume"])
+
+print(df_livres_2)
+print(df_livres_2.isna().sum())
+
+print(df_livres_2.columns)
