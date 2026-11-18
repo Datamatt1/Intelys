@@ -3,7 +3,7 @@ import pandas as pd
 df = pd.read_csv("auteurs.csv")
 
 #Remplacer les cases vides par une valeur simple
-df["annee_naissance"] = df["annee_naissance"].fillna(-1)  # -1 = annÃ©e inconnue
+df["annee_naissance"] = df["annee_naissance"].fillna(-1)  # -1 = annee inconnue
 df["annee_deces"] = df["annee_deces"].fillna(-1)          # -1 = vivant ou inconnu
 
 #Supprimer les doublons seulement !!
