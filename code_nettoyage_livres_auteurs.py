@@ -6,7 +6,7 @@ df = pd.read_csv("livres_auteurs.csv")
 print("Colonnes :", df.columns.tolist())
 print(f"Lignes avant nettoyage : {len(df)}")
 
-# Supprimer seulement les doublons
+# Supprime seulement les doublons
 df = df.drop_duplicates()
 
 # Sauvegarder et afficher
