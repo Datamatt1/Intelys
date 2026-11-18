@@ -1,6 +1,7 @@
 import pandas as pd
 
 df_livre = pd.read_csv("livres.csv")
+df_notes = pd.read_csv("notes.csv")
 
 pd.set_option('display.max_columns', None)
 
@@ -14,7 +15,6 @@ pd.set_option('display.max_columns', None)
 # 2k livres sans langues précisées
 
 colonne_null = df_livre.isna().sum()
-print(df_livre.isna().sum())
 
 
 
@@ -30,8 +30,38 @@ top_livre = df_livre[["titre", "nb_veut_lire", "nb_lecteurs", "note_moyenne"]].h
 # print(top_livre)
 
 # B. Nombre de livre disponibles en français
-print(df_livre["disponible_fr"].value_counts())
+# print(df_livre["disponible_fr"].value_counts())
 
 # C. Les livres avec le plus d'édition
-plus_edition = df_livre.sort_values("nb_editions", ascending=False).head(10)
+plus_edition = df_livre.sort_values("nb_editions", ascending=False).head(20)
 # print(plus_edition[["titre", "nb_editions", "nb_veut_lire", "nb_lecteurs", "note_moyenne"]])
+
+
+
+
+# Etape 3 : Nettoyage de la table
+# A. Conserver uniquement les livres FR
+livre_fr = df_livre["disponible_fr"] == 1
+df_livre = df_livre[livre_fr]
+
+# B. Ajouter la valeur sans sous-titre au None
+df_livre["sous_titre"] = df_livre["sous_titre"].fillna("Absent")
+
+
+# C. Changer le format des titres
+df_livre["titre"] = df_livre["titre"].str.strip().str.capitalize()
+
+print(df_livre.info())
+
+# D. Supprimer des colonnes
+df_livre = df_livre.drop(columns=["nb_editions", "langues", "nb_veut_lire", "nb_en_cours", "nb_deja_lu"])
+print(df_livre.head())
+
+
+# Left Join table des livres et table des notes
+df_notes = df_notes.drop(columns="date")                                    # Supprimer la colonne date de la table note
+table_note = df_notes.groupby("work_id")["note"].mean().round(2)            # Conserver uniquement la moyenne des notes par oeuvre dans la table des notes
+livre_note_df = pd.merge(df_livre, table_note, how="left", on="work_id")    # Fusionner les deux tables
+# print(livre_note_df.isna().sum())
+
+print(len(df_livre))
