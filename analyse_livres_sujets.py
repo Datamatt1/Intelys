@@ -9,9 +9,9 @@ df_livres_sujets = df_original.copy()
 
 df_livres_sujets["sujet"] = (
     df_livres_sujets["sujet"]
-    .str.strip() # supprimer espaces au début et à la fin
     .str.lower() # minuscules
-    .str.replace(r"\s+", " ", regex=True)) # Remplacer les espaces multiples
+    .str.replace(r"\s+", " ", regex=True) # Remplacer les espaces multiples
+    .str.strip()) # supprimer espaces au début et à la fin
 df_livres_sujets = df_livres_sujets[df_livres_sujets["sujet"] != ""].copy()
 
 # Transformer chaque texte en liste de sujets, séparés par les virgules 
