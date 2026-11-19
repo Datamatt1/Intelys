@@ -1,16 +1,30 @@
 import pandas as pd
 
-df = pd.read_csv("auteurs.csv")
+df = pd.read_csv("Intelys/auteurs.csv")
 
-#Remplacer les cases vides par une valeur simple
-df["annee_naissance"] = df["annee_naissance"].fillna(-1)  # -1 = annee inconnue
-df["annee_deces"] = df["annee_deces"].fillna(-1)          # -1 = vivant ou inconnu
+# --- Affichages de vérification initiale ---
+print("Colonnes :", df.columns.tolist())
+print(f"Nombre de lignes au départ : {len(df)}")
 
-#Supprimer les doublons seulement !!
+# --- Compter les doublons avant suppression ---
+nombre_doublons = df.duplicated().sum()
+print(f"Nombre de doublons détectés : {nombre_doublons}")
+
+# --- Remplacer les cases vides par une valeur ---
+# -1 = année inconnue ou auteur encore en vie
+df["annee_naissance"] = df["annee_naissance"].fillna(-1)
+df["annee_deces"] = df["annee_deces"].fillna(-1)
+
+# --- Supprimer les doublons ---
 df = df.drop_duplicates()
 
-#Mettre en nombre
+# --- Convertir les années en nombres entiers ---
 df["annee_naissance"] = df["annee_naissance"].astype(int)
 df["annee_deces"] = df["annee_deces"].astype(int)
 
-df.to_csv("auteurs_nettoye.csv", index=False)
+# --- Sauvegarder le fichier nettoyé ---
+df.to_csv("Intelys/auteurs_nettoye.csv", index=False)
+
+# --- Résultat final ---
+print(f"Nombre de lignes après nettoyage : {len(df)}")
+print(f"{nombre_doublons} lignes doublonnées supprimées")
