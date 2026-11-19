@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-notes=pd.read_csv("notes.csv")
+notes=pd.read_csv("data/sources/notes.csv")
 
 print(notes.columns)
 print(notes.describe())
@@ -24,4 +24,3 @@ barres_notes=ax.bar(repartition_notes.index, repartition_notes["Nombre_de_notes"
 ax.set(title="Repartition des notes", xlabel="Note", ylabel="Nombre")
 plt.show()
 
-print(len(notes.groupby("work_id").agg(note_moyenne=("note", "mean"))))

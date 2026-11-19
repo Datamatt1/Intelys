@@ -11,3 +11,8 @@ print(livres_sujets.describe())
 
 nb_sujet=(livres_sujets.groupby("sujet").agg(Nombre=("sujet", "count")).sort_values("Nombre", ascending=False))
 print(nb_sujet.head(10))
+
+
+nb_sujet.to_csv("livre_sujet_propre.csv")
+livre_sujet_propre=pd.read_csv("livre_sujet_propre.csv")
+print(livre_sujet_propre)
