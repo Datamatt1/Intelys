@@ -105,8 +105,6 @@ df_auteurs["annee_naissance"] = df_auteurs["annee_naissance"].astype(int)
 df_auteurs["annee_deces"] = df_auteurs["annee_deces"].astype(int)
 
 
-
-
 # Sara
 
 df_livres_auteurs = pd.read_csv("livres_auteurs.csv")
@@ -133,72 +131,70 @@ df1 = pd.merge(df_auteurs, df_livres_auteurs, how='left', on="author_id")
 
 df = pd.merge(df_livre, sujets_par_livre, how="left", on="work_id")
 
-df = pd.merge(df, df1, how="left", on="work_id")
+df= pd.merge(df, df1, how="left", on="work_id")
 
-
-print(len(df))
 
 # API de Google Books
 
 # Charger les variavles du fichier .env
-# load_dotenv()
+load_dotenv()
 
-# # Récupérer la clé API
-# api_key = os.getenv("GOOGLE_BOOKS_API_KEY")
+# Récupérer la clé API
+api_key = os.getenv("GOOGLE_BOOKS_API_KEY")
 
-# if not api_key:
-#     raise ValueError("La clé API est introuvable")
+if not api_key:
+    raise ValueError("La clé API est introuvable")
 
-# print("Clé API chargée avec succès")
-
-
-
-# url_livre = "https://www.googleapis.com/books/v1/volumes" \
-# "?q=python"\
-# "&orderBy=relevance"\
-# "&langRestrict=fr"\
-# "&printType=books"\
-# f"&key={api_key}"
+print("Clé API chargée avec succès")
 
 
-# def get_content(url):
 
-#     livres = []
+url_livre = "https://www.googleapis.com/books/v1/volumes" \
+"?q=python"\
+"&orderBy=relevance"\
+"&langRestrict=fr"\
+"&printType=books"\
+f"&key={api_key}"
 
-#     limit = 40
-#     offset = 0
 
-#     while True:
+def get_content(url):
 
-#         reponse = r.get(url, timeout=30)
-#         reponse.raise_for_status()                  # Status code est correct
+    livres = []
 
-#         data = reponse.json()
+    limit = 40
+    offset = 0
 
-#         # Récupérer les informations de chaque livre
-#         items = data.get("items", [])
+    while True:
 
-#         if not items:
-#             break
+        reponse = r.get(url, timeout=30)
+        reponse.raise_for_status()                  # Status code est correct
 
-#         for item in items:
-#             volume_info = item.get("volumeInfo", {})   # volumeInfo contient toutes les informations importantes des livres
-#             livres.append(volume_info)
+        data = reponse.json()
 
-#         # Passer à la page suivante
-#         offset += limit
+        # Récupérer les informations de chaque livre
+        items = data.get("items", [])
 
-#         # Arrêter lorsque tous les résultats ont été parcourus
-#         if offset >= data["totalItems"]:
-#             break
+        if not items:
+            break
 
-#         time.sleep(0.2)
-#     return livres
+        for item in items:
+            volume_info = item.get("volumeInfo", {})   # volumeInfo contient toutes les informations importantes des livres
+            livres.append(volume_info)
 
-# # Transformer les résultats en DataFrame
-# def get_dataframe():
-#     lst_livre = get_content(url_livre)
-#     df = pd.json_normalize(lst_livre, sep="_")
-#     return df
+        # Passer à la page suivante
+        offset += limit
 
-# print(get_dataframe().head())
+        # Arrêter lorsque tous les résultats ont été parcourus
+        if offset >= data["totalItems"]:
+            break
+
+        time.sleep(0.2)
+    return livres
+
+# Transformer les résultats en DataFrame
+def get_dataframe():
+    lst_livre = get_content(url_livre)
+    df = pd.json_normalize(lst_livre, sep="_")
+    return df
+
+print(get_dataframe().head())
