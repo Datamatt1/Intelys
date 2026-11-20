@@ -5,3 +5,10 @@ __pycache__/
 *.pyc
 .vscode/
 .pytest_cache/
+.ipynb_checkpoints/
+data/sources/
+scripts/nettoyage/
+scripts/analyses/
+analyse_livre_auteurs.py
+analyse_notes.py
+archives/
