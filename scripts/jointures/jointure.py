@@ -23,3 +23,5 @@ print("Nombre de livres uniques :", livres_complet["work_id"].nunique())
 
 # Export
 livres_complet.to_csv("data/final/livres_complet.csv", index=False)
+
+print(livres_complet)
