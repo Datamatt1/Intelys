@@ -20,30 +20,27 @@ livres_complet = livres_complet.merge(auteurs_nettoye, on="author_id", how="left
 livres_complet = livres_complet.merge(sujets_groupes, on="work_id", how="left")
 
 # Vérifications
-print(livres_complet.columns)
-print(livres_complet.head())
-print("Nombre de lignes :", len(livres_complet))
-print("Nombre de livres uniques :", livres_complet["work_id"].nunique())
+# print(livres_complet.columns)
+# print(livres_complet.head())
+# print("Nombre de lignes :", len(livres_complet))
+# print("Nombre de livres uniques :", livres_complet["work_id"].nunique())
 
 # Export
-livres_complet.to_csv("data/final/livres_complet.csv", index=False)
+# livres_complet.to_csv("data/final/livres_complet.csv", index=False)
 
 
-# # API de Google Books
+# API de Google Books
 
-# # Charger les variavles du fichier .env
-# load_dotenv()
+# Charger les variavles du fichier .env
+load_dotenv()
 
 # # Récupérer la clé API
-# api_key = os.getenv("GOOGLE_BOOKS_API_KEY")
+api_key = os.getenv("GOOGLE_BOOKS_API_KEY")
 
 # if not api_key:
 #     raise ValueError("La clé API est introuvable")
 
 # print("Clé API chargée avec succès")
-
-
-
 # url_livre = "https://www.googleapis.com/books/v1/volumes" \
 # "?q=python"\
 # "&orderBy=relevance"\
@@ -52,50 +49,86 @@ livres_complet.to_csv("data/final/livres_complet.csv", index=False)
 # f"&key={api_key}"
 
 
-# def get_content(url):
 
-#     livres = []
+import requests as r
+import pandas as pd
+import time
 
-#     limit = 40
-#     offset = 0
+API_URL = "https://www.googleapis.com/books/v1/volumes"
 
-#     while True:
+def get_content(query, api_key):
 
-#         reponse = r.get(url, timeout=30)
-#         reponse.raise_for_status()                  # Status code est correct
+    livres = []
+    limit = 40
+    offset = 0
 
-#         data = reponse.json()
+    while True:
 
-#         # Récupérer les informations de chaque livre
-#         items = data.get("items", [])
+        params = {
+            "q": query,
+            "langRestrict": "fr",
+            "printType": "books",
+            "orderBy": "relevance",
+            "maxResults": limit,
+            "startIndex": offset,
+            "key": api_key
+        }
 
-#         if not items:
-#             break
+        response = r.get(API_URL, params=params, timeout=30)
+        response.raise_for_status()
 
-#         for item in items:
-#             volume_info = item.get("volumeInfo", {})   # volumeInfo contient toutes les informations importantes des livres
-#             livres.append(volume_info)
+        data = response.json()
+        items = data.get("items", [])
 
-#         # Passer à la page suivante
-#         offset += limit
+        if not items:
+            break
 
-#         # Arrêter lorsque tous les résultats ont été parcourus
-#         if offset >= data["totalItems"]:
-#             break
+        for item in items:
+            volume_info = item.get("volumeInfo", {})
+            volume_info["google_books_id"] = item.get("id")
+            volume_info["search_category"] = query
+            livres.append(volume_info)
 
-#         time.sleep(0.2)
-#     return livres
+        offset += len(items)
 
-# # Transformer les résultats en DataFrame
-# def get_dataframe():
-#     lst_livre = get_content(url_livre)
-#     df = pd.json_normalize(lst_livre, sep="_")
-#     return df
+        if offset >= data.get("totalItems", 0):
+            break
 
-# df_api_book = get_dataframe()
+        time.sleep(0.2)
 
-# df_api_book.to_csv("data/final/api_google_book.csv", index=False)
+    return livres
 
 
-google_book = pd.read_csv("data/final/api_google_book.csv")
-print(google_book.head())
+# Les trois thématiques
+categories = {
+    "Histoire": "subject:history",
+    "Livres pratiques": "pratique",
+    "Science-fiction": "subject:science fiction"
+}
+
+# Collecte
+tous_les_livres = []
+
+for categorie, query in categories.items():
+
+    resultats = get_content(query, api_key)
+    tous_les_livres.extend(resultats)
+
+    print(f"{categorie} : {len(resultats)} livres récupérés")
+
+
+# Création du DataFrame
+df = pd.json_normalize(tous_les_livres, sep="_")
+
+# Suppression des doublons
+df = df.drop_duplicates(
+    subset="google_books_id"
+).reset_index(drop=True)
+
+print("Total de livres uniques :", len(df))
+
+
+df.to_csv("data/final/api_google_book.csv", index=False)
+
+a = pd.read_csv("data/final/api_google_book.csv")
+print(a.info())
