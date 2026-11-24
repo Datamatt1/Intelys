@@ -40,23 +40,11 @@ api_key = os.getenv("GOOGLE_BOOKS_API_KEY")
 # if not api_key:
 #     raise ValueError("La clé API est introuvable")
 
-# print("Clé API chargée avec succès")
-# url_livre = "https://www.googleapis.com/books/v1/volumes" \
-# "?q=python"\
-# "&orderBy=relevance"\
-# "&langRestrict=fr"\
-# "&printType=books"\
-# f"&key={api_key}"
-
-
-
-import requests as r
-import pandas as pd
-import time
 
 API_URL = "https://www.googleapis.com/books/v1/volumes"
 
 def get_content(query, api_key):
+    """Récupère le genre du livre souhaité et la clé API"""
 
     livres = []
     limit = 40
@@ -83,6 +71,8 @@ def get_content(query, api_key):
         if not items:
             break
 
+
+        # Les information des livres sont dans volumeInfo
         for item in items:
             volume_info = item.get("volumeInfo", {})
             volume_info["google_books_id"] = item.get("id")
@@ -99,7 +89,7 @@ def get_content(query, api_key):
     return livres
 
 
-# Les trois thématiques
+# Les trois thématiques collectées dans le google book
 categories = {
     "Histoire": "subject:history",
     "Livres pratiques": "pratique",
